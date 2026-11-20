@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPM AI // Universal Tuner v25.0</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace, system-ui;
+            background-color: #08080a;
+            color: #a0a0a5;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            letter-spacing: 0.5px;
+        }
+        .card {
+            background-color: #101014;
+            border: 1px solid #00f0ff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            animation: pulseGlow 4s infinite alternate;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00f0ff, #ff007f);
+            box-shadow: 0 2px 10px rgba(0, 240, 255, 0.5);
+        }
+        h1 {
+            font-size: 15px;
+            text-transform: uppercase;
+            text-align: left;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 1px dashed #2d2d34;
+            padding-bottom: 10px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+        h1 span {
+            color: #ff007f;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .input-group {
+            flex: 1;
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #707075;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #3a3a42;
+            background-color: #14141a;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 13px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        select:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+        }
+        .gear-matrix {
+            background-color: #0b0b0e;
+            border: 1px solid #ff007f;
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.1), inset 0 0 10px rgba(255, 0, 127, 0.05);
+        }
+        .gear-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #1a1a24;
+        }
+        .gear-row:last-child {
+            border-bottom: none;
+        }
+        .gear-name {
+            color: #808085;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .gear-value {
+            font-weight: bold;
+            color: #00f0ff;
+            font-size: 15px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.3);
+        }
+        .system-status {
+            font-size: 11px;
+            color: #ff007f;
+            text-align: left;
+            margin-top: 20px;
+            line-height: 1.5;
+            border-top: 1px dashed #2d2d34;
+            padding-top: 15px;
+            font-weight: bold;
+        }
+        #tuningIndicator {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+
+        @keyframes pulseGlow {
+            0% { border-color: #00e1ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.15); }
+            100% { border-color: #ff0066; box-shadow: 0 0 30px rgba(255, 0, 102, 0.25); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>SYS // UNIVERSAL_REVERSED_TUNER // <span>v25.0</span></h1>
+    
+    <div class="input-row">
+        <div class="input-group">
+            <label for="hpSelect">Car Tuning Level</label>
+            <select id="hpSelect" onchange="calculateSmartGearbox()">
+                <option value="unupgraded">Completely Stock / No Parts</option>
+                <option value="upgraded" selected>Upgraded (Turbo / ECU / Tyres)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="gearCountSelect">Gears In-Game</label>
+            <select id="gearCountSelect" onchange="calculateSmartGearbox()">
+                <option value="6">6 GEARS</option>
+                <option value="7" selected>7 GEARS</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label for="carPurpose">Optimization Protocol</label>
+        <select id="carPurpose" onchange="calculateSmartGearbox()">
+            <option value="drag" selected>Drag Racing (Hyper-Optimized Launch Setup)</option>
+            <option value="highway">Top Speed Highway (Maximum V-Max Velocity)</option>
+        </select>
+    </div>
+
+    <div class="gear-matrix">
+        <div class="gear-row"><span class="gear-name">Final Drive</span><span class="gear-value" id="valFinal">2.40</span></div>
+        <div class="gear-row"><span class="gear-name">Gear 1</span><span class="gear-value" id="valG1">4.45</span></div>
+        <div class="gear-row"><span class="gear-name">Gear 2</span><span class="gear-value" id="valG2">3.15</span></div>
+        <div class="gear-row"><span class="gear-name">Gear 3</span><span class="gear-value" id="valG3">2.18</span></div>
+        <div class="gear-row"><span class="gear-name">Gear 4</span><span class="gear-value" id="valG4">1.66</span></div>
+        <div class="gear-row"><span class="gear-name">Gear 5</span><span class="gear-value" id="valG5">1.28</span></div>
+        <div class="gear-row"><span class="gear-name">Gear 6</span><span class="gear-value" id="valG6">1.02</span></div>
+        <div class="gear-row" id="rowG7"><span class="gear-name">Gear 7</span><span class="gear-value" id="valG7">0.82</span></div>
+    </div>
+
+    <div class="system-status">
+        SYS_STATUS // <span id="tuningIndicator">SYNC_COMPLETE</span><br>
+        7-GEAR DRAG PROTOCOL EVOLVED PAST USER BASELINE.
+    </div>
+</div>
+
+<script>
+function calculateSmartGearbox() {
+    const hp = document.getElementById('hpSelect').value;
+    const gears = parseInt(document.getElementById('gearCountSelect').value);
+    const purpose = document.getElementById('carPurpose').value;
+    const indicator = document.getElementById('tuningIndicator');
+    
+    indicator.innerText = "CALCULATING...";
+    indicator.style.color = "#ff007f";
+
+    setTimeout(() => {
+        // Defaulting to the newly calibrated 7-Gear Drag profile
+        let config = { final: 2.40, g1: 4.45, g2: 3.15, g3: 2.18, g4: 1.66, g5: 1.28, g6: 1.02, g7: 0.82 };
+
+        if (gears === 6) {
+            // UNTOUCHED: Kept exactly as requested
+            if (purpose === 'drag') {
+                if (hp === 'upgraded') {
+                    config = { final: 6.00, g1: 2.12, g2: 1.25, g3: 0.94, g4: 0.71, g5: 0.54, g6: 0.42, g7: 0.00 };
+                } else {
+                    config = { final: 4.50, g1: 2.80, g2: 1.70, g3: 1.20, g4: 0.90, g5: 0.70, g6: 0.55, g7: 0.00 };
+                }
+            } else { 
+                if (hp === 'upgraded') {
+                    config = { final: 3.22, g1: 2.36, g2: 1.39, g3: 0.88, g4: 0.68, g5: 0.51, g6: 0.36, g7: 0.00 };
+                } else {
+                    config = { final: 3.00, g1: 2.50, g2: 1.45, g3: 0.95, g4: 0.72, g5: 0.56, g6: 0.42, g7: 0.00 };
+                }
+            }
+        } else { // 7 gears configurations
+            if (purpose === 'drag') {
+                if (hp === 'upgraded') {
+                    // SYNCED & EVOLVED: Optimized progression over your 2.50 baseline screenshot setup
+                    config = { final: 2.40, g1: 4.45, g2: 3.15, g3: 2.18, g4: 1.66, g5: 1.28, g6: 1.02, g7: 0.82 };
+                } else {
+                    config = { final: 3.15, g1: 3.90, g2: 2.65, g3: 1.90, g4: 1.45, g5: 1.18, g6: 0.95, g7: 0.78 };
+                }
+            } else { // highway protocol
+                if (hp === 'upgraded') {
+                    config = { final: 1.95, g1: 4.30, g2: 3.00, g3: 2.10, g4: 1.55, g5: 1.20, g6: 0.95, g7: 0.75 };
+                } else {
+                    config = { final: 2.25, g1: 3.80, g2: 2.55, g3: 1.85, g4: 1.40, g5: 1.10, g6: 0.88, g7: 0.70 };
+                }
+            }
+        }
+
+        document.getElementById('valFinal').innerText = config.final.toFixed(2);
+        document.getElementById('valG1').innerText = config.g1.toFixed(2);
+        document.getElementById('valG2').innerText = config.g2.toFixed(2);
+        document.getElementById('valG3').innerText = config.g3.toFixed(2);
+        document.getElementById('valG4').innerText = config.g4.toFixed(2);
+        document.getElementById('valG5').innerText = config.g5.toFixed(2);
+        document.getElementById('valG6').innerText = config.g6.toFixed(2);
+
+        const rowG7 = document.getElementById('rowG7');
+        if (gears === 6) {
+            rowG7.style.display = 'none';
+        } else {
+            rowG7.style.display = 'flex';
+            document.getElementById('valG7').innerText = config.g7.toFixed(2);
+        }
+
+        indicator.innerText = "SYNC_COMPLETE";
+        indicator.style.color = "#00f0ff";
+    }, 250);
+}
+
+window.onload = calculateSmartGearbox;
+</script>
+
+</body>
+</html>
